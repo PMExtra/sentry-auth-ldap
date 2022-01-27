@@ -112,7 +112,7 @@ AUTH_LDAP_SENTRY_GROUP_ROLE_MAPPING = {
 AUTH_LDAP_SENTRY_ORGANIZATION_GLOBAL_ACCESS = True
 
 AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + (
-    'sentry_ldap_auth.backend.SentryLdapBackend',
+    'sentry_auth_ldap.backend.SentryLdapBackend',
 )
 
 import logging

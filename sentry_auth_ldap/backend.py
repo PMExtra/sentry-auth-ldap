@@ -84,7 +84,7 @@ class SentryLdapBackend(LDAPBackend):
         # Add the user to the organization with global access
         OrganizationMember.objects.update_or_create(
             organization=organizations[0],
-            user=user,
+            user_id=user.id,
             defaults={
                 'role': member_role,
                 'has_global_access': has_global_access,

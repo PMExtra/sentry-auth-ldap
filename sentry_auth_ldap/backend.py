@@ -75,15 +75,23 @@ class SentryLdapBackend(LDAPBackend):
             UserEmail.objects.update_or_create(defaults=defaults, user=user, email=mail)
 
         organization = _find_default_organization()
-        # Allow modifying OrganizationMember after initial creation
-        if organization and not OrganizationMember.objects.filter(organization=organization, user_id=user.id).exists():
-            OrganizationMember.objects.create(
-                organization=organization,
-                user_id=user.id,
-                role: _get_effective_sentry_role(ldap_user) or getattr(settings, 'AUTH_LDAP_SENTRY_ORGANIZATION_ROLE_TYPE', None),
-                has_global_access: getattr(settings, 'AUTH_LDAP_SENTRY_ORGANIZATION_GLOBAL_ACCESS', False),
-                flags: getattr(OrganizationMember.flags, 'sso:linked'),
-            )
+        if organization:
+            sentry_role_from_ldap_group = _get_effective_sentry_role(ldap_user)
+            try:
+                organization_member = OrganizationMember.objects.get(organization=organization, user_id=user.id)
+                # This setting always overrides any manual changes a user might have made
+                if sentry_role_from_ldap_group:
+                    organization_member.role = sentry_role_from_ldap_group
+                    organization_member.save()
+            except OrganizationMember.DoesNotExist:
+                OrganizationMember.objects.create(
+                    organization=organization,
+                    user_id=user.id,
+                    role=sentry_role_from_ldap_group or getattr(settings, 'AUTH_LDAP_SENTRY_ORGANIZATION_ROLE_TYPE', None),
+                    has_global_access=getattr(settings, 'AUTH_LDAP_SENTRY_ORGANIZATION_GLOBAL_ACCESS', False),
+                    flags=getattr(OrganizationMember.flags, 'sso:linked'),
+                )
+         else
 
         if not getattr(settings, 'AUTH_LDAP_SENTRY_SUBSCRIBE_BY_DEFAULT', True):
             UserOption.objects.set_value(

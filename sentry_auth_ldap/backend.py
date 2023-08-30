@@ -74,9 +74,10 @@ class SentryLdapBackend(LDAPBackend):
         for mail in mail_attr or [email]:
             UserEmail.objects.update_or_create(defaults=defaults, user=user, email=mail)
 
+        organization = _find_default_organization()
         if organization:
+            sentry_role_from_ldap_group = _get_effective_sentry_role(ldap_user)
             try:
-                sentry_role_from_ldap_group = _get_effective_sentry_role(ldap_user)
                 organization_member = OrganizationMember.objects.get(organization=organization, user_id=user.id)
                 if sentry_role_from_ldap_group:
                     # The role mapped from LDAP will always overrides any manual changes the user might have made

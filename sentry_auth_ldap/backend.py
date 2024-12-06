@@ -1,12 +1,12 @@
 from django_auth_ldap.backend import LDAPBackend
 from django.conf import settings
+
 from sentry.models import (
     Organization,
     OrganizationMember,
-    UserEmail,
     UserOption,
 )
-
+from sentry.users.models import UserEmail
 
 def _get_effective_sentry_role(ldap_user):
     role_priority_order = [

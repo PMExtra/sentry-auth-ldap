@@ -14,12 +14,15 @@ def compare_versions(current: str, required: str) -> bool:
     """
     return version.parse(current) >= version.parse(required)
 
+from sentry.models import Organization, OrganizationMember, UserOption
+
 # Import different models for backwards compatibility
-if compare_versions(sentry_version, "24.8.0"):
-    from sentry.models import Organization, OrganizationMember, UserOption
+if compare_versions(sentry_version, "24.10.0"):
     from sentry.users.models import UserEmail
+elif compare_versions(sentry_version, "24.8.0"):
+    from sentry.users.models.useremail import UserEmail
 else:
-    from sentry.models import Organization, OrganizationMember, UserEmail, UserOption
+    from sentry.models import UserEmail
 
 def _get_effective_sentry_role(ldap_user):
     role_priority_order = [

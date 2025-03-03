@@ -15,7 +15,7 @@ A Django custom authentication backend for [Sentry](https://github.com/getsentry
 * 21.9.0 ≤ Sentry < 23.6.0 should work with sentry-auth-ldap==21.9.11
 * 23.6.0 ≤ Sentry should work with the latest release
 
-> Since sentry-auth-ldap==24.8.0, we'll strive to ensure backward compatibility. Therefore, sentry-auth-ldap==24.8.0 can be used with sentry>=23.6.0.
+> Since sentry-auth-ldap==24.8.0, we'll strive to ensure backward compatibility.
 
 ## Installation
 To install, simply add `sentry-auth-ldap` to your *requirements.txt* for your Sentry environment (or `pip install sentry-auth-ldap`).

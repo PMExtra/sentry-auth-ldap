@@ -18,7 +18,7 @@ install_requires = [
 
 setup(
     name='sentry-auth-ldap',
-    version='24.8.0',
+    version='24.8.1',
     author='Chad Killingsworth <chad.killingsworth@banno.com>, Barron Hagerman <barron.hagerman@banno.com>, PM Extra <pm@jubeat.net>',
     author_email='pm@jubeat.net',
     url='https://github.com/PMExtra/sentry-auth-ldap',

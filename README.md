@@ -22,7 +22,7 @@ To install, simply add `sentry-auth-ldap` to your *requirements.txt* for your Se
 
 For container environment, because of the minimal base image, it may miss some dependencies.
 
-You can easily enhance the image by `sentry/enhance-image.sh` script (need [getsentry/self-hosted](https://github.com/getsentry/self-hosted) 22.6.0 or higher):
+You can easily [enhance the image](https://develop.sentry.dev/self-hosted/configuration/#updating-basic-configuration) by `sentry/enhance-image.sh` script (need [getsentry/self-hosted](https://github.com/getsentry/self-hosted) 22.6.0 or higher):
 
 ```Shell
 #!/bin/bash

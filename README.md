@@ -146,7 +146,7 @@ AUTH_LDAP_SENTRY_GROUP_ROLE_MAPPING = {
     'admin': ['devleads'],
     'member': ['developers', 'seniordevelopers']
 }
-AUTH_LDAP_SENTRY_TEAM_MAPPING = {
+AUTH_LDAP_SENTRY_GROUP_TEAM_MAPPING = {
     'app': ['developers', 'devleads'],
     'infrastructure': ['sysadmins']
 }

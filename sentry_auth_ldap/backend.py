@@ -49,7 +49,7 @@ def _get_effective_sentry_role(ldap_user):
 
 
 def _get_effective_sentry_teams(ldap_user):
-    team_mapping = getattr(settings, 'AUTH_LDAP_SENTRY_TEAM_MAPPING', None)
+    team_mapping = getattr(settings, 'AUTH_LDAP_SENTRY_GROUP_TEAM_MAPPING', None)
     if not team_mapping:
         return []
 

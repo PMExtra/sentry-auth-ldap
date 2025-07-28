@@ -24,6 +24,9 @@ elif compare_versions(sentry_version, "24.8.0"):
 else:
     from sentry.models import UserEmail
 
+import logging
+logger = logging.getLogger('django_auth_ldap')
+
 def _get_effective_sentry_role(ldap_user):
     role_priority_order = [
         'member',
@@ -124,8 +127,9 @@ class SentryLdapBackend(LDAPBackend):
             for team_slug in sentry_teams_from_ldap_group:
                 try:
                     team = Team.objects.get(organization=organization, slug=team_slug)
-                    OrganizationMemberTeam.objects.create_or_update(team=team, organizationmember=organization_member)
+                    OrganizationMemberTeam.objects.get_or_create(team=team, organizationmember=organization_member)
                 except Team.DoesNotExist:
+                    logger.warning(f'Team {team_slug} does not exist')
                     pass
 
         # Set subscribe_by_default for new user

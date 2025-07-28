@@ -146,6 +146,10 @@ AUTH_LDAP_SENTRY_GROUP_ROLE_MAPPING = {
     'admin': ['devleads'],
     'member': ['developers', 'seniordevelopers']
 }
+AUTH_LDAP_SENTRY_GROUP_TEAM_MAPPING = {
+    'app': ['developers', 'devleads'],
+    'infrastructure': ['sysadmins']
+}
 AUTH_LDAP_SENTRY_ORGANIZATION_GLOBAL_ACCESS = True
 
 AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + (

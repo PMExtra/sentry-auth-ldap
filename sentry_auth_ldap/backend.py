@@ -14,7 +14,7 @@ def compare_versions(current: str, required: str) -> bool:
     """
     return version.parse(current) >= version.parse(required)
 
-from sentry.models import Organization, OrganizationMember, UserOption
+from sentry.models import Organization, OrganizationMember, OrganizationMemberTeam, Team, UserOption
 
 # Import different models for backwards compatibility
 if compare_versions(sentry_version, "24.10.0"):
@@ -23,6 +23,9 @@ elif compare_versions(sentry_version, "24.8.0"):
     from sentry.users.models.useremail import UserEmail
 else:
     from sentry.models import UserEmail
+
+import logging
+logger = logging.getLogger('django_auth_ldap')
 
 def _get_effective_sentry_role(ldap_user):
     role_priority_order = [
@@ -46,6 +49,18 @@ def _get_effective_sentry_role(ldap_user):
 
     highest_role = [role for role in role_priority_order if role in applicable_roles][-1]
     return highest_role
+
+
+def _get_effective_sentry_teams(ldap_user):
+    team_mapping = getattr(settings, 'AUTH_LDAP_SENTRY_GROUP_TEAM_MAPPING', None)
+    if not team_mapping:
+        return []
+
+    group_names = ldap_user.group_names
+    if not group_names:
+        return []
+
+    return [team for team, groups in team_mapping.items() if group_names.intersection(groups)]
 
 
 def _find_default_organization():
@@ -101,13 +116,21 @@ class SentryLdapBackend(LDAPBackend):
                     organization_member.save()
             except OrganizationMember.DoesNotExist:
                 # Assign the user to the organization if not exists
-                OrganizationMember.objects.create(
+                organization_member = OrganizationMember.objects.create(
                     organization=organization,
                     user_id=user.id,
                     role=sentry_role_from_ldap_group or getattr(settings, 'AUTH_LDAP_SENTRY_ORGANIZATION_ROLE_TYPE', None),
                     has_global_access=getattr(settings, 'AUTH_LDAP_SENTRY_ORGANIZATION_GLOBAL_ACCESS', False),
                     flags=getattr(OrganizationMember.flags, 'sso:linked'),
                 )
+            sentry_teams_from_ldap_group = _get_effective_sentry_teams(ldap_user)
+            for team_slug in sentry_teams_from_ldap_group:
+                try:
+                    team = Team.objects.get(organization=organization, slug=team_slug)
+                    OrganizationMemberTeam.objects.get_or_create(team=team, organizationmember=organization_member)
+                except Team.DoesNotExist:
+                    logger.warning(f'Team {team_slug} does not exist')
+                    pass
 
         # Set subscribe_by_default for new user
         if built and not getattr(settings, 'AUTH_LDAP_SENTRY_SUBSCRIBE_BY_DEFAULT', True):
